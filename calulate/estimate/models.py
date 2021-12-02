@@ -56,10 +56,6 @@ class Material(models.Model):
     measurement_unit = models.CharField(
         max_length=10, verbose_name='Еденица измерения'
         )
-    price = models.IntegerField(
-        default=0, validators=[MinValueValidator(0, 'Минимальное значение: 0')],
-        verbose_name= 'Цена материала', help_text='Укажите цену за материал'
-        )
 
     class Meta:
         indexes = [
@@ -141,11 +137,20 @@ class QuantityMaterial(models.Model):
     calculate = models.ForeignKey(
         Calculate, on_delete=models.CASCADE, related_name='quantity'
     )
+    price = models.IntegerField(
+        default=0, validators=[MinValueValidator(0, 'Минимальное значение: 0')],
+        verbose_name= 'Цена материала', help_text='Укажите цену материала'
+        )
     quantity = models.IntegerField(
-        validators=[MinValueValidator(1, 'Минимальное значение: 1')],
+        validators=[MinValueValidator(0, 'Минимальное значение: 0')], 
+        verbose_name= 'Колличество материала', help_text='Укажите колличество материала'
     )
+    amount = models.IntegerField(default=0, verbose_name= 'Сумма')
+    
 
     class Meta:
+        verbose_name = 'Материал/цена/колличество'
+        verbose_name_plural = 'Материал/цена/колличество'
         constraints = [
             models.UniqueConstraint(
                 fields=['calculate', 'material'], name='unicue_material'
@@ -158,21 +163,25 @@ class QuantityMaterial(models.Model):
 
 class QuantityWork(models.Model):
     work = models.ForeignKey(
-        Work, on_delete=models.CASCADE, related_name='work_quantity'
+        Work, on_delete=models.CASCADE, related_name='work_quantity', verbose_name= 'Наименование работ'
     )
     calculate = models.ForeignKey(
         Calculate, on_delete=models.CASCADE, related_name='calc_quantity'
     )
     quantity = models.IntegerField(
-        validators=[MinValueValidator(1, 'Минимальное значение: 1')],
+        validators=[MinValueValidator(1, 'Минимальное значение: 1')], verbose_name= 'Колличество'
     )
+    amount = models.IntegerField(default=0, verbose_name= 'Сумма')
 
     class Meta:
+        verbose_name = 'Работы/цена/колличество'
+        verbose_name_plural = 'Работы/цена/колличество'
         constraints = [
             models.UniqueConstraint(
                 fields=['calculate', 'work'], name='unicue_work'
             ),
         ]
+
 
     def __str__(self):
         return f'{self.calculate}, {self.quantity}'
