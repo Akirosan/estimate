@@ -1,0 +1,57 @@
+{% extends 'index.html' %}
+
+{% block title %}Список расчетов{% endblock %}
+
+{% block content %}
+  <div class="card col-6">
+    <h5 class="card-header">Список расчетов</h5>  
+    <div class="card-body">
+
+
+   <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Название</th>
+        <th scope="col">Автор</th>
+        <th scope="col">Тип</th>
+        <th scope="col">Дата зоздания</th>
+        <th scope="col">Дата редакт</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for calc in calculate %}
+        {% if forloop.first %}
+          <p>Начало цикла</p>
+        {% endif %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="{{calc.slug}}">{{calc.name}}</a></td>
+          <td>{{calc.author}}</td>
+          <td>{{calc.tupe}}</td>
+          <td>{{calc.date_create}}</td>
+          <td>{{calc.date_update}}</td>
+        </tr>
+        {% if forloop.last %}
+        <tr>
+          <td> Пока все </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        {% endif %}
+      {% empty %}
+      Пока ничего нет)
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+
+
+    
+    </div>
+  </div>
+{% endblock %}

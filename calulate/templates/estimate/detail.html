@@ -1,0 +1,131 @@
+{% extends 'index.html' %}
+
+{% block title %}{{ calculate.name }}{% endblock %}
+
+{% block content %}
+  <div class="card col-6">
+    <h5 class="card-header">{{ calculate.name }}</h5>  
+    <div class="card-body">
+        <div><a href="../">Вернуться к списку</a></div>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Автор</td><td>{{ calculate.author }}</td>
+            </tr>
+            <tr>
+                <td>Дата создания</td><td>{{ calculate.date_create }}</td>
+            </tr>
+            <tr>
+                <td>Дата редактирования</td><td>{{ calculate.date_update }}</td>
+            </tr>
+            <tr>
+                <td>Коэфф. сложности</td><td>{{ calculate.difficulty_factor }}</td>
+            </tr>
+            <tr>
+                <td>Гсм, амортизация</td><td>{{ calculate.fuel_price }}</td>
+            </tr>
+            <tr>
+                <td>Тип расчета</td><td>{{ calculate.tupe_calc }}</td>
+            </tr>
+            <tr>
+                <td>Описание</td><td>{{ calculate.text }}</td>
+            </tr>
+        </tbody>
+    </table>
+        
+
+<!-- Table MATERIALS-->
+
+   <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Наименование</th>
+        <th scope="col">Ед.изм.</th>
+        <th scope="col">Цена</th>
+        <th scope="col">Количество</th>
+        <th scope="col">Сумма</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for material in materials %}
+      
+        {% if forloop.first %}
+          <p>Список материалов</p>
+        {% endif %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="#">{{material.material.name}}</a></td>
+          <td>{{material.material.measurement_unit}}</td>
+          <td>{{material.price}}</td>
+          <td>{{material.quantity}}</td>
+          <td>{{material.amount}}</td>
+        </tr>
+        {% if forloop.last %}
+        <tr>
+          <td>ИТОГО</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>{{ total.material }}</td>
+        </tr>
+        {% endif %}
+      {% empty %}
+      Пока ничего нет)
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+<!-- Table WORKS-->
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Наименование</th>
+        <th scope="col">Ед.изм.</th>
+        <th scope="col">Цена</th>
+        <th scope="col">Количество</th>
+        <th scope="col">Сумма</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for work in works %}
+        {% if forloop.first %}
+          <p>Список работ</p>
+        {% endif %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="#">{{work.work.name}}</a></td>
+          <td>{{work.work.measurement_unit}}</td>
+          <td>{{work.work.price}}</td>
+          <td>{{work.quantity}}</td>
+          <td>{{work.amount}}</td>
+        </tr>
+        {% if forloop.last %}
+        <tr>
+          <td> ИТОГО </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>{{ total.work }}</td>
+        </tr>
+        {% endif %}
+      {% empty %}
+      Пока ничего нет)
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+
+
+
+
+    
+    </div>
+  </div>
+{% endblock %}
