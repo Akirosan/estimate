@@ -1,0 +1,63 @@
+{% extends 'index.html' %}
+
+{% block title %}Каталог материалов{% endblock %}
+
+{% block content %}
+  <div >
+    <div><h5 class="card-header">Каталог материалов</h5></div>
+    <div class="card-body">
+
+
+   <table class="table table-sm">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Наименование</th>
+        <th scope="col">Еденица измерения</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for material in materials %}
+        {% if forloop.first %}
+        <tr>
+            <th></th>
+            <th>
+                <div><a href="{% url "add_material" %}">Добавить материал</a></div>
+            </th>
+        </tr>
+        <tr>
+            <form method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Search">
+            </form>
+        </tr>
+        {% endif %}
+
+        
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="#">{{material.name}}</a></td>
+          <td>{{material.measurement_unit}}</td>
+          <td><a href="#1" onClick="window.open('https://www.etm.ru/catalog?searchValue={{material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">ЭТМ</a></td>
+          <td><a href="#1" onClick="window.open('https://www.minimaks.ru/catalog/?q={{material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">Минимакс</a></td>
+          <td><a href="{% url "edit_material" material.pk %}">редактировать</a></td>
+          <td><a href="{% url "delete_material" material.pk %}">удалить</a></td>
+
+        </tr>
+      {% empty %}
+      Пока ничего нет)
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+
+
+    
+    </div>
+  </div>
+{% endblock %}

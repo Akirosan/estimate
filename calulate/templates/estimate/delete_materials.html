@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+
+{% block title %}Удалить материал{% endblock %}
+
+{% block content %}
+  <div >
+    <div><h5 class="card-header">Удалить материал</h5></div>
+    <div class="card-body">
+        
+    <form method="post">{% csrf_token %}
+      <p>Вы точно уверены что хотите удалить прекрасный "{{ material.name }}"?</p>
+    <input type="submit" value="Стереть нахрен">
+</form>
+
+</div>
+</div>
+{% endblock %}

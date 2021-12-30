@@ -1,0 +1,41 @@
+{% extends 'index.html' %}
+
+{% block title %}Каталог видов работ{% endblock %}
+
+{% block content %}
+  <div >
+    <h5 class="card-header">Каталог видов работ</h5>
+    <div class="card-body">
+
+
+   <table class="table table-sm">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Наименование</th>
+        <th scope="col">Еденица измерения</th>
+        <th scope="col">цена</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for work in works %}
+        
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="#">{{work.name}}</a></td>
+          <td>{{work.measurement_unit}}</td>
+          <td>{{work.price}}</td>
+        </tr>
+      {% empty %}
+      Пока ничего нет)
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+
+
+    
+    </div>
+  </div>
+{% endblock %}

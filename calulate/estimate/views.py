@@ -1,10 +1,56 @@
+from django.db import models
 from django.shortcuts import render
-from .models import Calculate, Material, QuantityMaterial, QuantityWork
+from django.views.generic.edit import DeleteView, UpdateView
+from .models import Calculate, Material, QuantityMaterial, QuantityWork, Work
+from django.views.generic import ListView, CreateView
+from django.urls import reverse
+from django.urls import reverse_lazy
 
-def view_list(request):
-    """Вывод списка смет"""
+class DeleteMaterial(DeleteView):
+    queryset = Material.objects.all()
+    models = Material
+    success_url = reverse_lazy('catalog_materials')
+    template_name  = 'estimate/delete_materials.html'
+
+class EditMaterial(UpdateView):
+    queryset = Material.objects.all()
+    models = Material
+    fields = [ 'name', 'measurement_unit']
+    template_name  = 'estimate/edit_materials.html'
+
+    def get_success_url(self):
+        return reverse('catalog_materials')
+    
+
+class AddMaterial(CreateView):
+    queryset = Material.objects.all()
+    models = Material
+    fields = [ 'name', 'measurement_unit']
+    template_name  = 'estimate/add_materials.html'
+
+    def get_success_url(self):
+        return reverse('catalog_materials')
+
+class CatalogMaterialsView(ListView):
+    queryset = Material.objects.all()
+    context_object_name = 'materials'
+    template_name = 'estimate/materials.html'
+
+class CatalogWorksView(ListView):
+    queryset = Work.objects.all()
+    context_object_name = 'works'
+    template_name = 'estimate/works.html'
+
+
+class CalcListView(ListView):
+    queryset = Calculate.objects.all()
+    context_object_name = 'calculate'
+    template_name = 'estimate/list.html'
+
+def login(request):
+    """Вывод второго шаблона"""
     estimate = Calculate.objects.all()
-    return render(request, 'estimate/list.html', {'calculate': estimate})
+    return render(request, 'login.html', {'calculate': estimate})
 
 
 def view_detail(request, *args, **kwargs):

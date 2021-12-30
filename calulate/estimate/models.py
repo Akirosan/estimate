@@ -51,7 +51,7 @@ class Work(models.Model):
 
 class Material(models.Model):
     name = models.CharField(
-        max_length=100, verbose_name= 'Название', help_text='Укажите наименование материала'
+        max_length=100, verbose_name= 'Название'
         )
     measurement_unit = models.CharField(
         max_length=10, verbose_name='Еденица измерения'
