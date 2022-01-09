@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models.fields.related import ForeignKey
-from django.utils import timezone
-from django.contrib.auth.models import User
+from user.models import CustomUser
 from django.core.validators import MinValueValidator
 
 class Tag(models.Model):
@@ -87,7 +86,7 @@ class Calculate(models.Model):
         auto_now=True, verbose_name= 'Дата последнего редактирования'
         )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='calc_author', verbose_name='Автор расчета'
+        CustomUser, on_delete=models.CASCADE, related_name='calc_author', verbose_name='Автор расчета'
         )
     work = models.ManyToManyField(
         Work, 
@@ -189,7 +188,7 @@ class QuantityWork(models.Model):
 
 class Favorite(models.Model):
     calculate = ForeignKey(Calculate, on_delete=models.CASCADE, related_name='calc_favorite')
-    user = ForeignKey(User, on_delete=models.CASCADE, related_name='user_favorite')
+    user = ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_favorite')
 
     class Meta:
         verbose_name = 'Избранное'
