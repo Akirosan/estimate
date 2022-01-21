@@ -37,7 +37,7 @@ class WorkAdmin(admin.ModelAdmin):
 
 @admin.register(Material)
 class MaterialAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measurement_unit')
+    list_display = ('name', 'measurement_unit', 'price')
     search_fields = ('name', )
 
 

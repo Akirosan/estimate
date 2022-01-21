@@ -31,9 +31,8 @@ class Work(models.Model):
         max_length=10, verbose_name='Еденица измерения'
         )
     price = models.IntegerField(
-        default=0,
         validators=[MinValueValidator(0, 'Минимальное значение: 0')],
-        verbose_name='Цена работы', help_text='Укажите цену за работу'
+        verbose_name='Справочная цена работы', help_text='Укажите справочную цену за работу'
         )
 
     class Meta:
@@ -54,6 +53,12 @@ class Material(models.Model):
         )
     measurement_unit = models.CharField(
         max_length=10, verbose_name='Еденица измерения'
+        )
+    price = models.DecimalField(
+        max_digits=7,
+        decimal_places=2,
+        validators=[MinValueValidator(0, 'Минимальное значение: 0')],
+        verbose_name='Справочная цена материала', help_text='Укажите справочную цену материала'
         )
 
     class Meta:
@@ -111,6 +116,7 @@ class Calculate(models.Model):
         validators=[MinValueValidator(0, 'Минимальное значение: 0')],
         verbose_name= 'Транспортные расходы', help_text='Затраты на транспорт')
     upload = models.FileField(
+        blank=True,
         upload_to='uploads/%Y/%m/%d/', verbose_name= 'Дополнительные файлы'
         )
     tag = models.ManyToManyField(
@@ -167,6 +173,10 @@ class QuantityWork(models.Model):
     calculate = models.ForeignKey(
         Calculate, on_delete=models.CASCADE, related_name='calc_quantity'
     )
+    price = models.IntegerField(
+        default=0, validators=[MinValueValidator(0, 'Минимальное значение: 0')],
+        verbose_name= 'Цена за работу', help_text='Укажите цену работы'
+        )
     quantity = models.IntegerField(
         validators=[MinValueValidator(1, 'Минимальное значение: 1')], verbose_name= 'Колличество'
     )

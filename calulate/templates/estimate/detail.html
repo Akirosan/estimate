@@ -3,6 +3,15 @@
 {% block title %}{{ calculate.name }}{% endblock %}
 
 {% block content %}
+
+{% if form %}
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+  </form>
+{% endif %}
+
+
 <div >
     <h5 class="card-header">{{ calculate.name }}</h5>  
     <div class="card-body">
@@ -51,6 +60,12 @@
     </tr>
   </thead>
   <tbody>
+      <tr>
+        <th></th>
+        <th>
+            <div><a href="{% url "add_material" %}">Добавить материал</a></div>
+        </th>
+    </tr>
     {% for material in materials %}
       {% if forloop.first %}
       <tr>
@@ -75,54 +90,24 @@
         <td><a href="{% url "delete_material" material.pk %}">удалить</a></td>
 
       </tr>
+      {% if forloop.last %}
+      
+      {% endif %}
     {% empty %}
-    Пока ничего нет)
+    Пока ничего нет!)
     {% endfor %}
+    <tr>
+      <th></th>
+      <th>
+        <form action="{% url 'search_material' %}" method="get">
+          <input name="search_query" type="text" placeholder="Search...">
+        </form>
+      </th>
+  </tr>
   </tbody>
 </table>
 
 
-   {% comment %} <table class="table table-hover table-sm">
-    <thead class="thead-light">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Наименование</th>
-        <th scope="col">Ед.изм.</th>
-        <th scope="col">Цена</th>
-        <th scope="col">Количество</th>
-        <th scope="col">Сумма</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for material in materials %}
-      
-        {% if forloop.first %}
-          <p>Список материалов</p>
-        {% endif %}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-          <td><a href="#">{{material.material.name}}</a></td>
-          <td>{{material.material.measurement_unit}}</td>
-          <td>{{material.price}}</td>
-          <td>{{material.quantity}}</td>
-          <td>{{material.amount}}</td>
-        </tr>
-        {% if forloop.last %}
-        <tr>
-          <td>ИТОГО</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>{{ total.material }}</td>
-        </tr>
-        {% endif %}
-      {% empty %}
-      Пока ничего нет)
-      {% endfor %}
-
-    </tbody>
-  </table> {% endcomment %}
 
 <!-- Table WORKS-->
 

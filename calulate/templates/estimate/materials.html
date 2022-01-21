@@ -14,6 +14,7 @@
         <th scope="col">#</th>
         <th scope="col">Наименование</th>
         <th scope="col">Еденица измерения</th>
+        <th scope="col">Справочная цена</th>
         <th scope="col"></th>
         <th scope="col"></th>
         <th scope="col"></th>
@@ -42,6 +43,7 @@
           <th scope="row">{{forloop.counter}}</th>
           <td><a href="#">{{material.name}}</a></td>
           <td>{{material.measurement_unit}}</td>
+          <th>{{material.price}}</th>
           <td><a href="#1" onClick="window.open('https://www.etm.ru/catalog?searchValue={{material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">ЭТМ</a></td>
           <td><a href="#1" onClick="window.open('https://www.minimaks.ru/catalog/?q={{material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">Минимакс</a></td>
           <td><a href="{% url "edit_material" material.pk %}">редактировать</a></td>

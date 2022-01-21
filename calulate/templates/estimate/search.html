@@ -1,0 +1,44 @@
+{% extends 'index.html' %}
+
+{% block title %}Добавление материала{% endblock %}
+
+{% block content %}
+<div>
+
+    <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Наименование</th>
+            <th scope="col">Ед.изм.</th>
+            <th scope="col">Цена</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for material in object_list %}
+            <tr>
+              <th scope="row">{{forloop.counter}}</th>
+              <td><a href="#">{{material.name}}</a></td>
+              <td>{{material.measurement_unit}}</td>
+              <td>{{material.price}}</td>
+              <td><a href="{% url "edit_material" material.pk %}">Добавить в смету</a></td>
+      
+            </tr>
+          {% empty %}
+          Ничего не найдено!)
+          {% endfor %}
+          <tr>
+            <th></th>
+            <th>
+              <form action="{% url 'search_material' %}" method="get">
+                <input name="search_query" type="text" placeholder="Search...">
+              </form>
+            </th>
+        </tr>
+        </tbody>
+      </table>
+      {{calc_id}}
+    
+</div>
+{% endblock %}

@@ -23,6 +23,7 @@
       {% for calc in calculate %}
         {% if forloop.first %}
           <p>Начало цикла</p>
+          <p><a href="{% url "add_calc" %}">Создать смету</a></p>
         {% endif %}
         <tr>
           <th scope="row">{{forloop.counter}}</th>
