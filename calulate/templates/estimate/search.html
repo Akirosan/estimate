@@ -19,26 +19,52 @@
           {% for material in object_list %}
             <tr>
               <th scope="row">{{forloop.counter}}</th>
-              <td><a href="#">{{material.name}}</a></td>
+              <td><a href="{% url "add_material_to_calc" material.pk calc_id %}">{{material.name}}</a></td>
               <td>{{material.measurement_unit}}</td>
               <td>{{material.price}}</td>
-              <td><a href="{% url "edit_material" material.pk %}">Добавить в смету</a></td>
+              {% comment %} <td>{% if calc_id %}
+                <a href="{% url "add_material_to_calc" material.pk calc_id %}">Добавить в смету</a>
+                {% endif %} {% endcomment %}
+              
+              
       
             </tr>
           {% empty %}
-          Ничего не найдено!)
+          <tr>
+            <td></td>
+            <td>Ничего не найдено! :( </td>
+
+          </tr>
+          
+          
+          
           {% endfor %}
           <tr>
-            <th></th>
-            <th>
+            <td></td>
+            <td>
               <form action="{% url 'search_material' %}" method="get">
-                <input name="search_query" type="text" placeholder="Search...">
+                <input type="hidden" name="calc_id" type="text" value='{{calc_id}}' >
+                <input name="search_query" type="text" placeholder="Кто ищет тот найдет...">
+                <input type="submit" value="Искать...">
               </form>
-            </th>
-        </tr>
+            <td>
+          </tr>
+          {% if search_query %}
+          <tr>
+            <td></td>
+            <td>
+              <a href="#1" onClick="window.open('https://www.etm.ru/catalog?searchValue={{search_query}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">Поискать "{{search_query}}" в ЭТМ</a>
+            </td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td></td>
+            <td>
+              <a href="{% url "add_material" %}">Добавить материал</a>
+            </td>
+          </tr>
         </tbody>
       </table>
-      {{calc_id}}
     
 </div>
 {% endblock %}

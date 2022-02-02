@@ -28,9 +28,13 @@ class Work(models.Model):
         help_text='Укажите наименование работы'
         )
     measurement_unit = models.CharField(
-        max_length=10, verbose_name='Еденица измерения'
+        max_length=10,
+        verbose_name='Еденица измерения'
         )
-    price = models.IntegerField(
+    price = models.FloatField(
+        blank=True,
+        null=True,
+        default=0,
         validators=[MinValueValidator(0, 'Минимальное значение: 0')],
         verbose_name='Справочная цена работы', help_text='Укажите справочную цену за работу'
         )
@@ -54,9 +58,10 @@ class Material(models.Model):
     measurement_unit = models.CharField(
         max_length=10, verbose_name='Еденица измерения'
         )
-    price = models.DecimalField(
-        max_digits=7,
-        decimal_places=2,
+    price = models.FloatField(
+        blank=True,
+        null=True,
+        default=0,
         validators=[MinValueValidator(0, 'Минимальное значение: 0')],
         verbose_name='Справочная цена материала', help_text='Укажите справочную цену материала'
         )
@@ -91,18 +96,18 @@ class Calculate(models.Model):
         auto_now=True, verbose_name= 'Дата последнего редактирования'
         )
     author = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name='calc_author', verbose_name='Автор расчета'
+        CustomUser, on_delete=models.CASCADE, related_name='calculates', verbose_name='Автор расчета'
         )
     work = models.ManyToManyField(
         Work, 
         verbose_name='Виды работ',
-        related_name='work_calc',
+        related_name='calculates',
         through='QuantityWork',
         through_fields=('calculate', 'work'),
         )
     material = models.ManyToManyField(
         Material, verbose_name='Материал',
-        related_name='material_calc',
+        related_name='calculates',
         through='QuantityMaterial',
         through_fields=('calculate', 'material'),
         )
@@ -112,7 +117,7 @@ class Calculate(models.Model):
     difficulty_factor = models.FloatField(
         verbose_name= 'Коэффициент сложности'
         )
-    fuel_price = models.IntegerField(
+    fuel_price = models.FloatField(
         validators=[MinValueValidator(0, 'Минимальное значение: 0')],
         verbose_name= 'Транспортные расходы', help_text='Затраты на транспорт')
     upload = models.FileField(
@@ -120,7 +125,7 @@ class Calculate(models.Model):
         upload_to='uploads/%Y/%m/%d/', verbose_name= 'Дополнительные файлы'
         )
     tag = models.ManyToManyField(
-        Tag, verbose_name='Теги', related_name='tag_calc'
+        Tag, verbose_name='Теги', related_name='calculates'
         )
     tupe_calc = models.CharField(
         max_length=15, choices=TUPE_CALC, default='estimate', verbose_name= 'Тип расчета'
@@ -137,59 +142,78 @@ class Calculate(models.Model):
 
 class QuantityMaterial(models.Model):
     material = models.ForeignKey(
-        Material, on_delete=models.CASCADE, related_name='material_quantity'
+        Material, on_delete=models.CASCADE, related_name='quantity_materials'
     )
     calculate = models.ForeignKey(
-        Calculate, on_delete=models.CASCADE, related_name='quantity'
+        Calculate, on_delete=models.CASCADE, related_name='quantity_materials'
     )
-    price = models.IntegerField(
+    price = models.FloatField(
+        blank=True,
+        null=True,
         default=0, validators=[MinValueValidator(0, 'Минимальное значение: 0')],
         verbose_name= 'Цена материала', help_text='Укажите цену материала'
         )
-    quantity = models.IntegerField(
+    quantity = models.FloatField(
+        blank=True,
+        null=True,
+        default=0,
         validators=[MinValueValidator(0, 'Минимальное значение: 0')], 
         verbose_name= 'Колличество материала', help_text='Укажите колличество материала'
     )
-    amount = models.IntegerField(default=0, verbose_name= 'Сумма')
+    amount = models.FloatField(
+        blank=True,
+        null=True,
+        default=0,
+        verbose_name= 'Сумма')
     
 
     class Meta:
         verbose_name = 'Материал/цена/колличество'
         verbose_name_plural = 'Материал/цена/колличество'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['calculate', 'material'], name='unicue_material'
-            ),
-        ]
+        
 
     def __str__(self):
-        return f'{self.calculate}, {self.quantity}'
+        return f'{self.material}, {self.quantity}'
 
 
 class QuantityWork(models.Model):
     work = models.ForeignKey(
-        Work, on_delete=models.CASCADE, related_name='work_quantity', verbose_name= 'Наименование работ'
+        Work,
+        on_delete=models.CASCADE,
+        related_name='quantity_works',
+        verbose_name= 'Наименование работ'
     )
     calculate = models.ForeignKey(
-        Calculate, on_delete=models.CASCADE, related_name='calc_quantity'
+        Calculate,
+        on_delete=models.CASCADE,
+        related_name='quantity_works'
     )
-    price = models.IntegerField(
-        default=0, validators=[MinValueValidator(0, 'Минимальное значение: 0')],
-        verbose_name= 'Цена за работу', help_text='Укажите цену работы'
-        )
-    quantity = models.IntegerField(
-        validators=[MinValueValidator(1, 'Минимальное значение: 1')], verbose_name= 'Колличество'
+    price = models.FloatField(
+        blank=True,
+        null=True,
+        default=0,
+        validators=[MinValueValidator(0, 'Минимальное значение: 0')],
+        verbose_name= 'Цена за работу',
+        help_text='Укажите цену работы'
     )
-    amount = models.IntegerField(default=0, verbose_name= 'Сумма')
+    quantity = models.FloatField(
+        blank=True,
+        null=True,
+        default=0,
+        validators=[MinValueValidator(1, 'Минимальное значение: 1')],
+        verbose_name= 'Колличество'
+    )
+    amount = models.FloatField(
+        blank=True,
+        null=True,
+        default=0,
+        verbose_name= 'Сумма'
+    )
 
     class Meta:
         verbose_name = 'Работы/цена/колличество'
         verbose_name_plural = 'Работы/цена/колличество'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['calculate', 'work'], name='unicue_work'
-            ),
-        ]
+        
 
 
     def __str__(self):
@@ -197,8 +221,8 @@ class QuantityWork(models.Model):
 
 
 class Favorite(models.Model):
-    calculate = ForeignKey(Calculate, on_delete=models.CASCADE, related_name='calc_favorite')
-    user = ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_favorite')
+    calculate = ForeignKey(Calculate, on_delete=models.CASCADE, related_name='favorites')
+    user = ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='favorites')
 
     class Meta:
         verbose_name = 'Избранное'

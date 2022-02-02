@@ -56,39 +56,45 @@
       <th scope="col"></th>
       <th scope="col"></th>
       <th scope="col"></th>
-      <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
-      <tr>
+      {% comment %} <tr>
         <th></th>
         <th>
             <div><a href="{% url "add_material" %}">Добавить материал</a></div>
         </th>
-    </tr>
+    </tr> {% endcomment %}
+    <form id="edit_mat", action="{% url 'edit_mat_in_calc' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' >
     {% for material in materials %}
-      {% if forloop.first %}
+      {% comment %} {% if forloop.first %}
       <tr>
           <th></th>
           <th>
-              <div><a href="{% url "add_material" %}">Добавить материал</a></div>
+              <div>Первая итерация</div>
           </th>
       </tr>
-      {% endif %}
+      {% endif %} {% endcomment %}
 
       
       <tr>
-        <th scope="row">{{forloop.counter}}</th>
-        <td><a href="#">{{material.material.name}}</a></td>
-        <td>{{material.material.measurement_unit}}</td>
-        <td>{{material.price}}</td>
-        <td>{{material.quantity}}</td>
-        <td>{{material.amount}}</td>
-        <td><a href="#1" onClick="window.open('https://www.etm.ru/catalog?searchValue={{material.material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">ЭТМ</a></td>
-        <td><a href="#1" onClick="window.open('https://www.minimaks.ru/catalog/?q={{material.material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">Минимакс</a></td>
-        <td><a href="{% url "edit_material" material.pk %}">редактировать</a></td>
-        <td><a href="{% url "delete_material" material.pk %}">удалить</a></td>
+        
+          
+          
 
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="#">{{material.material.name}}</a></td>
+          <td>{{material.material.measurement_unit}}</td>
+          <td><input size="8", maxlength="10", name="price_{{material.pk}}" type="text" value={{material.price}}></td>
+          <td><input size="8", maxlength="10", name="quantity_{{material.pk}}" type="text" value={{material.quantity}}></td></td>
+          <td>{{material.amount}}</td>
+          <td><a href="#1" onClick="window.open('https://www.etm.ru/catalog?searchValue={{material.material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">ЭТМ</a></td>
+          <td><a href="#1" onClick="window.open('https://www.minimaks.ru/catalog/?q={{material.material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">Минимакс</a></td>
+          
+          <td><a href="{% url "delete_material_from_calc" material.pk calculate.id %}">удалить</a></td>
+          
       </tr>
       {% if forloop.last %}
       
@@ -96,11 +102,17 @@
     {% empty %}
     Пока ничего нет!)
     {% endfor %}
+    <input type="submit" value="Применить">
+    </form>
+    
     <tr>
       <th></th>
       <th>
-        <form action="{% url 'search_material' %}" method="get">
+        <form id="search_mat", action="{% url 'search_material' %}" method="get">
+          {% csrf_token %}
+          <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' >
           <input name="search_query" type="text" placeholder="Search...">
+          <input type="submit" value="Search...">
         </form>
       </th>
   </tr>

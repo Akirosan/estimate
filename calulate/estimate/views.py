@@ -1,12 +1,13 @@
 from re import M
-from unicodedata import name
+from unicodedata import decimal, name
 from django.db import models
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.generic.edit import DeleteView, UpdateView
 from .models import Calculate, Material, QuantityMaterial, QuantityWork, Work
 from django.views.generic import ListView, CreateView
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 class DeleteMaterial(DeleteView):
     """Удаляет материал из каталога материалов"""
@@ -64,6 +65,7 @@ def login(request): # Переместить в модуль user
 
 def view_detail(request, *args, **kwargs):
     """Вывод деталей сметы с материалом и работами"""
+    # import ipdb; ipdb.set_trace()
     calculate = Calculate.objects.get(slug=kwargs['slug'])
     materials = QuantityMaterial.objects.filter(calculate=calculate)
     works = QuantityWork.objects.filter(calculate=calculate)
@@ -77,6 +79,23 @@ def view_detail(request, *args, **kwargs):
             'total': total_price(materials, works),
         }
     )
+def edit_mat_in_calc(request, *args, **kwargs):
+    """Редактирует материалы на странице сметы"""
+    materials_from_calc=QuantityMaterial.objects.filter(calculate=request.POST['calc_id'])
+    calc=get_object_or_404(Calculate, id=request.POST['calc_id'])
+    for key in request.POST:
+        if 'price_' in key:
+            mat_id=key.replace('price_', '')  # Отделяем ID материала
+            material=materials_from_calc.get(id=int(mat_id))  # Достаем объект QuantityMaterial
+            prise=float(request.POST[key])  # Получаем цену
+            quantity=float(request.POST[f'quantity_{mat_id}'])  # Получаем колличество
+            material.price = prise  # Присваиваем объекту QuantityMaterial цену
+            material.quantity = quantity  # Присваиваем объекту QuantityMaterial коллличество
+            material.amount = prise*quantity  # Определяем сумму
+            # import ipdb; ipdb.set_trace()
+            material.save()  # Сохраняем объект
+
+    return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug':calc.slug}))
 
 def total_price(materials, works):
     """Считаем ИТОГО по материалам и работам"""
@@ -101,15 +120,6 @@ class AddCalc(CreateView):
         return reverse('view_estimate_detail')
 
 
-def delete_material_from_calc(request, *args, **kwargs):
-    """Удаляет материал из сметы"""
-    pass
-    # queryset = Material.objects.all()
-    # models = Material
-    # success_url = reverse_lazy('catalog_materials')
-    # template_name  = 'estimate/delete_materials.html'
-
-
 
 class SearchMaterialListView(ListView):  # 
     """Поиск материалов для добавления в смету"""
@@ -119,13 +129,30 @@ class SearchMaterialListView(ListView):  #
 
     def get_queryset(self):  # Ищем материалы соответствующие запросу из формы
         query = self.request.GET.get('search_query')
-        # import ipdb; ipdb.set_trace()
         materials = Material.objects.filter(name__icontains=query)
-        # import ipdb; ipdb.set_trace()
         return materials
     
-    def get_context_data(self, **kwargs):  # Добавляет в контекст шаблона ID сметы в которую нужно добавить материал
+    def get_context_data(self, **kwargs):  # Добавляет в контекст шаблона слаг сметы в которую нужно добавить материал
         context = super().get_context_data(**kwargs)
-        # import ipdb; ipdb.set_trace()
-        context['calc_id'] = 'ID сметы в контексте для возврата к ней при добавлении материала def get_context_data'
+        context['calc_id'] = self.request.GET['calc_id'] # Добавляем в контекст шаблона слаг сметы(чтобы знать куда добавить материал)
+        context['search_query'] = self.request.GET['search_query'] # Добавляем в контекст шаблона поисковый запрос
         return context
+
+
+def add_material_to_calc(request, *args, **kwargs):
+    """Добавляет материал в смету"""
+    calc = get_object_or_404(Calculate, id=kwargs['calc_id'])
+    material = get_object_or_404(Material, id=kwargs['pk'])
+    QuantityMaterial.objects.create( # Добавляем материал в список материалов
+        material=material,
+        calculate=calc,
+        price=material.price,
+        quantity=0)
+    return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug':calc.slug}))
+        
+
+def delete_material_from_calc(request, *args, **kwargs):
+    """Удаляет материал из сметы"""
+    calc = get_object_or_404(Calculate, id=kwargs['calc_id'])
+    QuantityMaterial.objects.filter(id=kwargs['pk']).delete()
+    return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug':calc.slug}))
