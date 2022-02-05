@@ -30,7 +30,7 @@ jobs:
 
   build_and_push_dockerhub:
     name: Push Backend Docker image to Docker Hub
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: tests
     steps:
