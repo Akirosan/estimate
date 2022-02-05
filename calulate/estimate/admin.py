@@ -17,12 +17,16 @@ class MaterialInline(admin.TabularInline):
 
 @admin.register(Calculate)
 class CalculateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'date_create', 'date_update', 'author',  'tupe_calc')
+    list_display = (
+        'name', 'date_create', 'date_update', 'author',  'tupe_calc'
+    )
     inlines = [WorkInline, MaterialInline]
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
         ('Основное', {'fields': ('name', 'author', 'slug', 'text')}),
-        ('Дополнительно', {'fields': ('difficulty_factor', 'fuel_price', 'upload', 'tag', 'tupe_calc')}),
+        ('Дополнительно', {'fields': (
+            'difficulty_factor', 'fuel_price', 'upload', 'tag', 'tupe_calc'
+        )}),
     )
 
 

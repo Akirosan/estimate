@@ -3,7 +3,7 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
-    """Расширяем стандартную модель юзера, в дальнейшем сможем легко ее изменить"""
+    """Расширяем стандартную модель юзера, далее сможем легко ее изменить"""
     biography = models.TextField(
         max_length=500,
         blank=True,

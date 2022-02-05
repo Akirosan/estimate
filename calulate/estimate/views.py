@@ -80,21 +80,25 @@ def view_detail(request, *args, **kwargs):
 
 def edit_mat_in_calc(request, *args, **kwargs):
     """Редактирует материалы на странице сметы"""
-    materials_from_calc = QuantityMaterial.objects.filter(calculate=request.POST['calc_id'])
+    materials_from_calc = QuantityMaterial.objects.filter(
+        calculate=request.POST['calc_id']
+    )
     calc = get_object_or_404(Calculate, id=request.POST['calc_id'])
     for key in request.POST:
         if 'price_' in key:
             mat_id = key.replace('price_', '')  # Отделяем ID материала
-            material = materials_from_calc.get(id=int(mat_id))  # Достаем объект QuantityMaterial
+            material = materials_from_calc.get(id=int(mat_id))
             prise = float(request.POST[key])  # Получаем цену
-            quantity = float(request.POST[f'quantity_{mat_id}'])  # Получаем колличество
+            quantity = float(request.POST[f'quantity_{mat_id}'])  # колличество
             material.price = prise  # Присваиваем объекту QuantityMaterial цену
-            material.quantity = quantity  # Присваиваем объекту QuantityMaterial коллличество
+            material.quantity = quantity  # Присваиваем объекту коллличество
             material.amount = prise*quantity  # Определяем сумму
             # import ipdb; ipdb.set_trace()
             material.save()  # Сохраняем объект
 
-    return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}))
+    return HttpResponseRedirect(
+        reverse('view_estimate_detail', kwargs={'slug': calc.slug})
+    )
 
 
 def total_price(materials, works):
@@ -114,7 +118,15 @@ class AddCalc(CreateView):
     """Создает новую смету"""
     queryset = Calculate.objects.all()
     models = Calculate
-    fields = ['name', 'slug', 'text', 'difficulty_factor', 'fuel_price', 'tupe_calc', 'author']
+    fields = [
+        'name',
+        'slug',
+        'text',
+        'difficulty_factor',
+        'fuel_price',
+        'tupe_calc',
+        'author'
+    ]
     template_name = 'estimate/detail.html'
 
     def get_success_url(self):
@@ -132,10 +144,11 @@ class SearchMaterialListView(ListView):  #
         materials = Material.objects.filter(name__icontains=query)
         return materials
     
-    def get_context_data(self, **kwargs):  # Добавляет в контекст шаблона слаг сметы в которую нужно добавить материал
+    def get_context_data(self, **kwargs):
+        """Добавляет в контекст слаг сметы в которую нужно добавить материал"""
         context = super().get_context_data(**kwargs)
-        context['calc_id'] = self.request.GET['calc_id']  # Добавляем в контекст шаблона слаг сметы
-        context['search_query'] = self.request.GET['search_query']  # Добавляем в контекст шаблона поисковый запрос
+        context['calc_id'] = self.request.GET['calc_id']
+        context['search_query'] = self.request.GET['search_query']
         return context
 
 
@@ -149,11 +162,15 @@ def add_material_to_calc(request, *args, **kwargs):
         price=material.price,
         quantity=0
     )
-    return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}))
+    return HttpResponseRedirect(
+        reverse('view_estimate_detail', kwargs={'slug': calc.slug})
+    )
         
 
 def delete_material_from_calc(request, *args, **kwargs):
     """Удаляет материал из сметы"""
     calc = get_object_or_404(Calculate, id=kwargs['calc_id'])
     QuantityMaterial.objects.filter(id=kwargs['pk']).delete()
-    return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}))
+    return HttpResponseRedirect(
+        reverse('view_estimate_detail', kwargs={'slug': calc.slug})
+    )
