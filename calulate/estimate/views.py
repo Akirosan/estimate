@@ -1,10 +1,10 @@
-from django.shortcuts import get_object_or_404, render
-from django.views.generic.edit import DeleteView, UpdateView
-from .models import Calculate, Material, QuantityMaterial, QuantityWork, Work
-from django.views.generic import ListView, CreateView
-from django.urls import reverse
-from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, ListView
+from django.views.generic.edit import DeleteView, UpdateView
+
+from .models import Calculate, Material, QuantityMaterial, QuantityWork, Work
 
 
 class DeleteMaterial(DeleteView):

@@ -1,10 +1,8 @@
 from django.contrib import admin
 from django.db import models
 from django.db.models import fields
-from .models import (
-    Tag, Work, Calculate,
-    Favorite, Material,
-    )
+
+from .models import Calculate, Favorite, Material, Tag, Work
 
 
 class WorkInline(admin.TabularInline):
