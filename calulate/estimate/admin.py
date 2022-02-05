@@ -1,14 +1,15 @@
 from django.contrib import admin
 from django.db import models
 from django.db.models import fields
-from .models import (Tag, Work, Calculate, 
-                    Favorite, Material, QuantityMaterial, 
-                    QuantityWork
-                    )
+from .models import (
+    Tag, Work, Calculate,
+    Favorite, Material,
+    )
+
+
 class WorkInline(admin.TabularInline):
     model = Calculate.work.through
     extra = 1
-
 
 
 class MaterialInline(admin.TabularInline):
@@ -16,15 +17,13 @@ class MaterialInline(admin.TabularInline):
     extra = 1
 
 
-
-
 @admin.register(Calculate)
 class CalculateAdmin(admin.ModelAdmin):
     list_display = ('name', 'date_create', 'date_update', 'author',  'tupe_calc')
     inlines = [WorkInline, MaterialInline]
-    prepopulated_fields = {'slug':('name',)}
+    prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
-        ('Основное', {'fields': ('name', 'author', 'slug', 'text' )}),
+        ('Основное', {'fields': ('name', 'author', 'slug', 'text')}),
         ('Дополнительно', {'fields': ('difficulty_factor', 'fuel_price', 'upload', 'tag', 'tupe_calc')}),
     )
 
