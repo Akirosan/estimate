@@ -18,7 +18,7 @@ class Tag(models.Model):
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
         ordering = ['name']
-    
+
     def __str__(self):
         return self.name
 
@@ -107,7 +107,7 @@ class Calculate(models.Model):
         verbose_name='Автор расчета'
     )
     work = models.ManyToManyField(
-        Work, 
+        Work,
         verbose_name='Виды работ',
         related_name='calculates',
         through='QuantityWork',
@@ -169,7 +169,7 @@ class QuantityMaterial(models.Model):
         blank=True,
         null=True,
         default=0,
-        validators=[MinValueValidator(0, 'Минимальное значение: 0')], 
+        validators=[MinValueValidator(0, 'Минимальное значение: 0')],
         verbose_name='Колличество материала',
         help_text='Укажите колличество материала'
     )
@@ -179,11 +179,11 @@ class QuantityMaterial(models.Model):
         default=0,
         verbose_name='Сумма'
     )
-    
+
     class Meta:
         verbose_name = 'Материал/цена/колличество'
         verbose_name_plural = 'Материал/цена/колличество'
-        
+
     def __str__(self):
         return f'{self.material}, {self.quantity}'
 

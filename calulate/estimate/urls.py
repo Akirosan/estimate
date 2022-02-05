@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 
 from .views import (AddCalc, AddMaterial, CalcListView, CatalogMaterialsView,
                     CatalogWorksView, DeleteMaterial, EditMaterial,
@@ -7,7 +7,7 @@ from .views import (AddCalc, AddMaterial, CalcListView, CatalogMaterialsView,
                     view_detail)
 
 urlpatterns = [
-    
+
     path('add/', AddCalc.as_view(), name='add_calc'),  # Создать смету
     path('<slug:slug>/', view_detail, name='view_estimate_detail'),
     path('estimate_list/', CalcListView.as_view(), name='view_estimate_list'),

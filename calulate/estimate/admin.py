@@ -1,6 +1,4 @@
 from django.contrib import admin
-from django.db import models
-from django.db.models import fields
 
 from .models import Calculate, Favorite, Material, Tag, Work
 
@@ -18,7 +16,7 @@ class MaterialInline(admin.TabularInline):
 @admin.register(Calculate)
 class CalculateAdmin(admin.ModelAdmin):
     list_display = (
-        'name', 'date_create', 'date_update', 'author',  'tupe_calc'
+        'name', 'date_create', 'date_update', 'author', 'tupe_calc'
     )
     inlines = [WorkInline, MaterialInline]
     prepopulated_fields = {'slug': ('name',)}

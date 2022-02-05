@@ -24,7 +24,7 @@ class EditMaterial(UpdateView):
 
     def get_success_url(self):
         return reverse('catalog_materials')
-    
+
 
 class AddMaterial(CreateView):
     """Создает материал в каталог материалов"""
@@ -92,7 +92,7 @@ def edit_mat_in_calc(request, *args, **kwargs):
             quantity = float(request.POST[f'quantity_{mat_id}'])  # колличество
             material.price = prise  # Присваиваем объекту QuantityMaterial цену
             material.quantity = quantity  # Присваиваем объекту коллличество
-            material.amount = prise*quantity  # Определяем сумму
+            material.amount = prise * quantity  # Определяем сумму
             # import ipdb; ipdb.set_trace()
             material.save()  # Сохраняем объект
 
@@ -133,7 +133,7 @@ class AddCalc(CreateView):
         return reverse('view_estimate_detail')
 
 
-class SearchMaterialListView(ListView):  # 
+class SearchMaterialListView(ListView):
     """Поиск материалов для добавления в смету"""
     # context_object_name = 'materials'
     template_name = 'estimate/search.html'
@@ -143,7 +143,7 @@ class SearchMaterialListView(ListView):  #
         query = self.request.GET.get('search_query')
         materials = Material.objects.filter(name__icontains=query)
         return materials
-    
+
     def get_context_data(self, **kwargs):
         """Добавляет в контекст слаг сметы в которую нужно добавить материал"""
         context = super().get_context_data(**kwargs)
@@ -165,7 +165,7 @@ def add_material_to_calc(request, *args, **kwargs):
     return HttpResponseRedirect(
         reverse('view_estimate_detail', kwargs={'slug': calc.slug})
     )
-        
+
 
 def delete_material_from_calc(request, *args, **kwargs):
     """Удаляет материал из сметы"""
