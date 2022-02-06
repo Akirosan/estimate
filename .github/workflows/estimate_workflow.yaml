@@ -65,12 +65,13 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           stack_file_name: docker-compose.yml
           script: |
-            sudo docker pull akirosan/estimate
+            sudo docker pull akirosan/estimate:latest
             
             sudo docker-compose stop
             sudo docker-compose rm web
             sudo docker system prune
             # Создаст файл для переменных окружения
+            rm .env
             touch .env 
             # Наполнит файл переменными окружения из секретов GitHub
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
@@ -82,7 +83,7 @@ jobs:
             # echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }} >> .env
             # echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
-            # sudo docker-compose up -d
+            sudo docker-compose up -d
 
             # docker-compose exec estimate python manage.py migrate
             # docker-compose exec estimate python manage.py createsuperuser
