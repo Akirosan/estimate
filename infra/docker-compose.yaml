@@ -1,26 +1,38 @@
-version: '3.8' # версия docker-compose
+version: '3.8'
+services:
 
-services: # имена и описания контейнеров, которые должны быть развёрнуты
-  db: # описание контейнера db
-    image: postgres:13.0-alpine # образ, из которого должен быть запущен контейнер
-    volumes: # volume и связанная с ним директория в контейнере
+  db:
+    image: postgres:12.4
+    volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file: # переменные окружения для проброса внутрь контейнера.
-      - ./.env
+    env_file:
+      - .env
+
   web:
-    build: . # создать образ для контейнера из докерфайла, который лежит в директории 
-    restart: always # аналог системы запуска юнитов в systemd
-    command: gunicorn calculate.wsgi:application --bind 0.0.0.0:8000
+    image: akirosan/estimate
+    restart: always
+    command: gunicorn api_foodgram.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_value:/code/static/
       - media_value:/code/media/
-    ports:
-     - "8000:8000" # проброс портов
-    
-    depends_on: # "зависит от", 
+    depends_on:
       - db
-    env_file: # переменные окружения для проброса внутрь контейнера.
-      - ./.env
+    env_file:
+      - .env
+
+  # nginx:
+  #   image: nginx:1.19.3
+  #   ports:
+  #     - 80:80
+  #   volumes:
+  #     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+  #     - static_value:/static/
+  #     - media_value:/media/
+  #     - ./frontend/build:/usr/share/nginx/html/
+  #     - ./docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
+  #     - ./docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
+  #   depends_on:
+  #     - web
 
 volumes:
   postgres_data:
