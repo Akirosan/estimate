@@ -22,12 +22,13 @@
       </tr>
     </thead>
     <tbody>
+      <div><a href="{% url "add_material" %}">Добавить материал</a></div>
       {% for material in materials %}
         {% if forloop.first %}
         <tr>
             <th></th>
             <th>
-                <div><a href="{% url "add_material" %}">Добавить материал</a></div>
+                
             </th>
         </tr>
         <tr>
