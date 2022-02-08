@@ -3,6 +3,7 @@ services:
 
   db:
     image: postgres:12.4
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -11,28 +12,30 @@ services:
   web:
     image: akirosan/estimate
     restart: always
-    command: gunicorn api_foodgram.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_value:/code/static/
       - media_value:/code/media/
+      # - nginx_conf:/code/nginx/
     depends_on:
       - db
     env_file:
       - .env
+    command: gunicorn calculate.wsgi:application --bind 0.0.0.0:8000
 
   nginx:
     image: nginx:1.19.3
     ports:
       - 80:80
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/
       - static_value:/static/
       - media_value:/media/
       # - ./frontend/build:/usr/share/nginx/html/
-      - ./docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
-      - ./docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
+      #- ./docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
+      #- ./docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
     depends_on:
       - web
+    restart: always
 
 volumes:
   postgres_data:
