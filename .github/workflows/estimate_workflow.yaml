@@ -71,11 +71,12 @@ jobs:
             # втч контейнеры docker, остаются образы
             sudo docker-compose down  
             
-            
+            # sudo docker rmi akirosan/estimate
 
 
-            # sudo docker-compose stop
-            # sudo docker-compose rm web
+            sudo docker-compose stop
+            sudo docker-compose rm web
+            sudo docker system prune -f # Унитожает неиспользуемые контейнеры
             
             # Создаст файл для переменных окружения
             rm .env
@@ -92,7 +93,7 @@ jobs:
             # echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
             sudo docker-compose up -d
 
-            sudo docker system prune -f # Унитожает неиспользуемые контейнеры
+            
 
             
   send_message:
