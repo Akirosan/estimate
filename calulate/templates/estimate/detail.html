@@ -1,15 +1,22 @@
 {% extends 'index.html' %}
+{% block script%}
+  <script>
+    $(window).on("scroll", function(){
+      $('input[name="scroll"]').val($(window).scrollTop());
+    });
+    {% if scroll%}
+      $(document).ready(function(){
+        window.scrollTo(0, {{ scroll }});
+      }); 
+    {% endif%}
+  </script>
+{% endblock%}
+
 
 {% block title %}{{ calculate.name }}{% endblock %}
 
 {% block content %}
 
-{% if form %}
-  <form method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save">
-  </form>
-{% endif %}
 
 
 <div >
@@ -68,8 +75,8 @@
           <th scope="row">{{forloop.counter}}</th>
           <td><a href="#">{{material.material.name}}</a></td>
           <td>{{material.material.measurement_unit}}</td>
-          <td><input size="8", maxlength="10", name="price_{{material.pk}}" type="text" value={{material.price}}></td>
-          <td><input size="8", maxlength="10", name="quantity_{{material.pk}}" type="text" value={{material.quantity}}></td></td>
+          <td><input size="8", maxlength="10", name="mat_price_{{material.pk}}" type="text" value={{material.price}}></td>
+          <td><input size="8", maxlength="10", name="mat_quantity_{{material.pk}}" type="text" value={{material.quantity}}></td></td>
           <td>{{material.amount}}</td>
           <td><a href="#1" onClick="window.open('https://www.etm.ru/catalog?searchValue={{material.material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">ЭТМ</a></td>
           <td><a href="#1" onClick="window.open('https://www.minimaks.ru/catalog/?q={{material.material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">Минимакс</a></td>
@@ -97,7 +104,6 @@
       <th></th>
       <th>
         <form id="search_mat", action="{% url 'search_material' %}" method="get">
-          {% csrf_token %}
           <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' >
           <input name="search_query" type="text" placeholder="Поиск материала">
           <input type="submit" value="Найти">
@@ -118,52 +124,84 @@
 
 <!-- Table WORKS-->
 
-  <table class="table table-hover table-sm">
-    <thead class="thead-light">
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th scope="col", colspan="9">Список материалов</th>
+    </tr>  
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Наименование</th>
+      <th scope="col">Ед.изм.</th>
+      <th scope="col">Цена</th>
+      <th scope="col">Количество</th>
+      <th scope="col">Сумма</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <form id="edit_work", action="{% url 'edit_work_in_calc' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' >
+      
+    {% for work in works %}
       <tr>
-        <th scope="col">#</th>
-        <th scope="col">Наименование</th>
-        <th scope="col">Ед.изм.</th>
-        <th scope="col">Цена</th>
-        <th scope="col">Количество</th>
-        <th scope="col">Сумма</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for work in works %}
-        {% if forloop.first %}
-          <p>Список работ</p>
-        {% endif %}
-        <tr>
           <th scope="row">{{forloop.counter}}</th>
           <td><a href="#">{{work.work.name}}</a></td>
           <td>{{work.work.measurement_unit}}</td>
-          <td>{{work.work.price}}</td>
-          <td>{{work.quantity}}</td>
+          <td><input size="8", maxlength="10", name="work_price_{{work.pk}}" type="text" value={{work.price}}></td>
+          <td><input size="8", maxlength="10", name="work_quantity_{{work.pk}}" type="text" value={{work.quantity}}></td>
           <td>{{work.amount}}</td>
-        </tr>
-        {% if forloop.last %}
-        <tr>
-          <td> ИТОГО </td>
           <td></td>
           <td></td>
-          <td></td>
-          <td></td>
-          <td>{{ total.work }}</td>
-        </tr>
-        {% endif %}
+          <td><a href="{% url "delete_work_from_calc" calculate.id work.pk %}">удалить</a></td>
+      </tr>
       {% empty %}
-      Пока ничего нет)
+      <tr>
+        <td colspan="9">Пока ничего нет, воспользуйтесь поиском чтобы добавить вид работы</td>
+      </tr>
+      
       {% endfor %}
+      {% if works %}
+      <tr>
+        <td></td>
+        <td><strong>ИТОГО работ на сумму:</strong></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><strong>{{total.work}}</strong></td>
+        <td colspan="3"><input type="submit" value="Пересчитать"></td>
+      </tr>
+      {% endif %}
+    </form>
+    <tr>
+      <th></th>
+      <th>
+        <form id="search_work", action="{% url 'search_work' %}" method="get">
+          
+          <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' >
+          <input name="search_query" type="text" placeholder="Поиск вида работы">
+          <input type="hidden" name="scroll" value="">
+          <input type="submit" value="Найти">
+        </form>
+        1{{ scroll }}1
+        2{{ search_type }}2
+      </th>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+  </tr>
+  </tbody>
+</table>
 
-    </tbody>
-  </table>
 
-
-
-
-
-    
     </div>
   </div>
 {% endblock %}
+

@@ -2,9 +2,10 @@ from django.urls import path
 
 from .views import (AddCalc, AddMaterial, CalcListView, CatalogMaterialsView,
                     CatalogWorksView, DeleteMaterial, EditMaterial,
-                    SearchMaterialListView, add_material_to_calc,
+                    SearchMaterialListView, add_object_to_calc,
                     delete_material_from_calc, edit_mat_in_calc, login,
-                    view_detail)
+                    view_detail, edit_work_in_calc, SearchWorkListView, add_work, 
+                    delete_work_from_calc,)
 
 urlpatterns = [
 
@@ -19,8 +20,8 @@ urlpatterns = [
     path('works', CatalogWorksView.as_view(), name='catalog_works'),
     # Добавление материала в каталог материалов
     path('material/add/', AddMaterial.as_view(), name='add_material'),
-    # Редакт мат. в каталоге материалов
-    path(
+    
+    path(  # Редакт мат. в каталоге материалов
         'material/<int:pk>/edit/',
         EditMaterial.as_view(),
         name='edit_material'
@@ -35,9 +36,9 @@ urlpatterns = [
         SearchMaterialListView.as_view(),
         name='search_material'),
     path(  # Добавление материала в смету
-        '<int:pk>/add_to_calc/<int:calc_id>/',
-        add_material_to_calc,
-        name='add_material_to_calc'
+        '<int:calc_id>/add_to_calc/<str:search_type>/<int:pk>/<int:scroll>/',
+        add_object_to_calc,
+        name='add_object_to_calc'
     ),
     path(  # Удаление материала из сметы
         '<int:pk>/delete_from_calc/<int:calc_id>/',
@@ -49,5 +50,29 @@ urlpatterns = [
         edit_mat_in_calc,
         name='edit_mat_in_calc'
     ),
+
+
+    path(  # Изменяет цену и количество материала в смете
+        'matedit/edit_work_in_calc/',
+        edit_work_in_calc,
+        name='edit_work_in_calc'
+    ),
+    path(  # Поиск вида работ
+        'work/search/',
+        SearchWorkListView.as_view(),
+        name='search_work'),
+    # Добавление материала в каталог материалов
+    path('work/add/', add_work, name='add_work'),
+    path(  # Удаление материала из сметы
+        '<int:calc_id>/work/delete/<int:pk>/',
+        delete_work_from_calc,
+        name='delete_work_from_calc'
+    ),
+    # path(  # Удаление материала из сметы
+    #     '<slug:slug>/',
+    #     list_calc_after_add_object,
+    #     name='list_calc_after_add_object'
+    # ),
+    
 
 ]

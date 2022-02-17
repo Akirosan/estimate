@@ -16,18 +16,12 @@
           </tr>
         </thead>
         <tbody>
-          {% for material in object_list %}
+          {% for object in object_list %}
             <tr>
               <th scope="row">{{forloop.counter}}</th>
-              <td><a href="{% url "add_material_to_calc" material.pk calc_id %}">{{material.name}}</a></td>
-              <td>{{material.measurement_unit}}</td>
-              <td>{{material.price}}</td>
-              {% comment %} <td>{% if calc_id %}
-                <a href="{% url "add_material_to_calc" material.pk calc_id %}">Добавить в смету</a>
-                {% endif %} {% endcomment %}
-              
-              
-      
+              <td><a href="{% url "add_object_to_calc" calc_id search_type object.pk scroll%}">{{object.name}}</a></td>
+              <td>{{object.measurement_unit}}</td>
+              <td>{{object.price}}</td>
             </tr>
           {% empty %}
           <tr>
@@ -42,7 +36,7 @@
           <tr>
             <td></td>
             <td>
-              <form action="{% url 'search_material' %}" method="get">
+              <form action="{% if search_type == 'work'%}{% url 'search_work' %}{%endif%}{% if search_type == 'mat'%}{% url 'search_material' %}{%endif%}" method="get">
                 <input type="hidden" name="calc_id" type="text" value='{{calc_id}}' >
                 <input name="search_query" type="text" placeholder="Кто ищет тот найдет...">
                 <input type="submit" value="Искать...">
@@ -50,6 +44,7 @@
             <td>
           </tr>
           {% if search_query %}
+          {% if search_type == "mat" %}
           <tr>
             <td></td>
             <td>
@@ -57,10 +52,27 @@
             </td>
           </tr>
           {% endif %}
+          {% endif %}
           <tr>
             <td></td>
-            <td>
-              <a href="{% url "add_material" %}">Добавить материал</a>
+            
+              {% if search_type == "work" %}
+              {% comment %} <form method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save">
+            </form> {% endcomment %}
+              <form action="{% url 'add_work' %}" method="post">
+                {% csrf_token %}
+                <td>{{form.name}}<input name="name" type="text"></td>
+                <td>{{form.measurement_unit}}<input name="measurement_unit" type="text"></td>
+                <td>{{form.price}}<input name="price" type="text"></td>
+                <td><input type="submit" value="Добавить"></td>
+              </form>
+              {% elif search_type == "mat"%}
+                <a href="{% url "add_material" %}">Добавить новый вид работы</a>
+              {% else %}
+                В шаблон не передана переменная search_type
+              {% endif %}
             </td>
           </tr>
         </tbody>
