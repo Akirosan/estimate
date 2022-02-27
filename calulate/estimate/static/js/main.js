@@ -1,3 +1,4 @@
+// fileref.setAttribute ("type", "text/javascript")
 console.log('hello word')
 //
 const url = window.location.href // Получили IP текущей страницы

@@ -3,9 +3,9 @@
     <head>
       {% load static %}
       <!-- Required meta tags -->
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-      {% comment %} <meta charset="utf-8">
-      <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff" http-equiv="Content-Type" /> {% endcomment %}
+      {% comment %} <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> {% endcomment %}
+      <meta charset="utf-8">
+      <meta content="text/html; charset=UTF-8; X-Content-Type-Options=sniffing" http-equiv="Content-Type" />
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       
       <!-- Bootstrap CSS -->
@@ -18,7 +18,8 @@
       
       <!--custom css & js-->
       {% block scripts %}{% endblock %}
-      <link tupe="text/css" href={% static 'css/style.css' %}>
+      <script src="{% static 'js/main.js' %}" defer ></script>
+      <link href={% static 'css/style.css' %}>
       
 
 
