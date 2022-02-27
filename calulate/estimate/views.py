@@ -4,6 +4,8 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView
 from django.views.generic.edit import DeleteView, UpdateView
 from .forms import AddWorkForm, SearchMaterialForm
+from django.http import JsonResponse
+from django.contrib import messages
 
 from .models import Calculate, Material, QuantityMaterial, QuantityWork, Work
 
@@ -38,7 +40,27 @@ class AddMaterial(CreateView):
         return reverse('catalog_materials')
 
 
-def add_work(request):
+class DeleteWork(DeleteView):
+    """Удаляет материал из каталога материалов"""
+    queryset = Work.objects.all()
+    models = Work
+    success_url = reverse_lazy('catalog_works')
+    template_name = 'estimate/delete_work.html'
+
+
+class EditWork(UpdateView):
+    """Редактирует материал в каталоге материалов"""
+    queryset = Work.objects.all()
+    models = Work
+    fields = ['name', 'measurement_unit', 'price']
+    template_name = 'estimate/edit_work.html'
+
+    def get_success_url(self):
+        return reverse('catalog_works')
+
+def list_work(request):
+    works = Work.objects.all()
+    # import ipdb; ipdb.set_trace()
     if request.method == 'POST':
         form = AddWorkForm(request.POST)  # Передаем данные из POST в форму
         if form.is_valid():  # Если проверка успешна
@@ -48,27 +70,15 @@ def add_work(request):
                 price = form.cleaned_data['price']
             )
             new_work.save()
+            message = 'успешно добавлено'
             # import ipdb; ipdb.set_trace()
-            return HttpResponseRedirect(request.META['HTTP_REFERER'])
+            messages.success(request, 'Успешно добавлено! ')
+            return HttpResponseRedirect(request.META['HTTP_REFERER'], {'form': form})
     else:
         form = AddWorkForm()
-    return HttpResponseRedirect(request.META['HTTP_REFERER'], {'form': form})
-
-# def get_name(request):
-#     # if this is a POST request we need to process the form data
-#     if request.method == 'POST':
-#         # create a form instance and populate it with data from the request:
-#         form = NameForm(request.POST)
-#         # check whether it's valid:
-#         if form.is_valid():
-#             # process the data in form.cleaned_data as required
-#             # ...
-#             # redirect to a new URL:
-#             return HttpResponseRedirect('/thanks/')
-#     else:
-#         form = NameForm()
-
-#     return render(request, 'name.html', {'form': form})
+    
+    # return render(request, 'work/add/', {'form': form})
+    return render(request, 'estimate/works.html', {'form': form, 'works': works})
 
 
 
@@ -84,11 +94,11 @@ class CatalogMaterialsView(ListView):
     template_name = 'estimate/materials.html'
 
 
-class CatalogWorksView(ListView):
-    """Выводит список видов работ из каталога видов работ"""
-    queryset = Work.objects.all()
-    context_object_name = 'works'
-    template_name = 'estimate/works.html'
+# class CatalogWorksView(ListView):
+#     """Выводит список видов работ из каталога видов работ"""
+#     queryset = Work.objects.all()
+#     context_object_name = 'works'
+#     template_name = 'estimate/works.html'
 
 
 class CalcListView(ListView):
@@ -218,30 +228,46 @@ class SearchMaterialListView(ListView):
         return context
 
 
-def add_object_to_calc(request, *args, **kwargs):
-    """Добавляет материал/работу в смету"""
-    calc = get_object_or_404(Calculate, id=kwargs['calc_id'])
-    if kwargs['search_type'] == "mat":
-        material = get_object_or_404(Material, id=kwargs['pk'])
-        QuantityMaterial.objects.create(
-            material=material,
-            calculate=calc,
-            price=material.price,
-            quantity=0
-        )
-    if kwargs['search_type'] == "work":
-        work = get_object_or_404(Work, id=kwargs['pk'])
-        QuantityWork.objects.create(
-            work=work,
-            calculate=calc,
-            price=work.price,
-            quantity=0
-        )
-    if 'scroll' in kwargs:
-        scroll = f'?scroll={kwargs["scroll"]}'  # Заберем значение scroll из именованных и отправим GET запросом в обработчик view_estimate_detail
-        return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}) + scroll)
-    return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}))
+# def add_object_to_calc(request, *args, **kwargs):
+#     """Добавляет материал/работу в смету"""
+#     calc = get_object_or_404(Calculate, id=kwargs['calc_id'])
+#     if kwargs['search_type'] == "mat":
+#         material = get_object_or_404(Material, id=kwargs['pk'])
+#         QuantityMaterial.objects.create(
+#             material=material,
+#             calculate=calc,
+#             price=material.price,
+#             quantity=0
+#         )
+#     if kwargs['search_type'] == "work":
+#         work = get_object_or_404(Work, id=kwargs['pk'])
+#         QuantityWork.objects.create(
+#             work=work,
+#             calculate=calc,
+#             price=work.price,
+#             quantity=0
+#         )
+#     if 'scroll' in kwargs:
+#         scroll = f'?scroll={kwargs["scroll"]}'  # Заберем значение scroll из именованных и отправим GET запросом в обработчик view_estimate_detail
+#         return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}) + scroll)
+#     return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}))
 
+
+def add_work_to_calc(request, *args, **kwargs):
+    """Добавляет работу в смету"""
+    
+    calc = get_object_or_404(Calculate, slug=kwargs['slug'])
+    work = get_object_or_404(Work, id=kwargs['pk'])
+    QuantityWork.objects.create(
+        work=work,
+        calculate=calc,
+        price=work.price,
+        quantity=0
+    )
+    if 'scroll' in request.GET:
+        scroll = f'?scroll={request.GET["scroll"]}'  # Заберем значение scroll из именованных и отправим GET запросом в обработчик view_estimate_detail
+        return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}) + scroll)
+    return redirect(request.META['HTTP_REFERER'])
 
 
 def delete_material_from_calc(request, *args, **kwargs):
@@ -252,26 +278,53 @@ def delete_material_from_calc(request, *args, **kwargs):
         reverse('view_estimate_detail', kwargs={'slug': calc.slug})
     )
 
+def is_ajax(request): # Проверяет является ли request ajax 
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
+def search_work_results(request):
+    """Выдает результаты по ajax запросу из формы поиска видов работ"""
+    # import pdb; pdb.set_trace()
+    if is_ajax(request=request): # Если запрос is_ajax()
+        result = None
+        # import pdb; pdb.set_trace()
+        work = request.POST.get('work')
+        print(work)
+        qs = Work.objects.filter(name__icontains=work)[:5] # Фильтруем результаты
+        if len(qs) > 0 and len(work) > 0: # Если есть результаты
+            data = []
+            for pos in qs: # Создаем словарь с данными
+                item = {
+                    'pk': pos.pk,
+                    'name': pos.name,
+                    # 'studio': pos.studio,
+                    # 'image': str(pos.image.url)
+                }
+                data.append(item)
+            result = data
+        else:
+            result = 'No works found'
 
-class SearchWorkListView(ListView):
-    """Поиск работ для добавления в смету"""
-    template_name = 'estimate/search.html'
-    model = Work
+        return JsonResponse({'data': result})
+    return JsonResponse({})
 
-    def get_queryset(self):  # Ищем материалы соответствующие запросу из формы
-        query = self.request.GET.get('search_query')
-        search_data = Work.objects.filter(name__icontains=query)
-        return search_data
+# class SearchWorkListView(ListView):
+#     """Поиск работ для добавления в смету"""
+#     template_name = 'estimate/search.html'
+#     model = Work
 
-    def get_context_data(self, **kwargs):
-        """Добавляет в контекст слаг сметы в которую нужно добавить работу"""
-        context = super().get_context_data(**kwargs)
-        context['calc_id'] = self.request.GET['calc_id']
-        context['scroll'] = self.request.GET['scroll']
-        context['search_query'] = self.request.GET['search_query']  # Поисковый запрос
-        context['search_type'] = "work"  # Идентификатор объекта поиска (работа или материал)
-        return context
+#     def get_queryset(self):  # Ищем материалы соответствующие запросу из формы
+#         query = self.request.GET.get('search_query')
+#         search_data = Work.objects.filter(name__icontains=query)
+#         return search_data
+
+#     def get_context_data(self, **kwargs):
+#         """Добавляет в контекст слаг сметы в которую нужно добавить работу"""
+#         context = super().get_context_data(**kwargs)
+#         context['calc_id'] = self.request.GET['calc_id']
+#         context['scroll'] = self.request.GET['scroll']
+#         context['search_query'] = self.request.GET['search_query']  # Поисковый запрос
+#         context['search_type'] = "work"  # Идентификатор объекта поиска (работа или материал)
+#         return context
 
 def delete_work_from_calc(request, *args, **kwargs):
     """Удаляет материал из сметы"""

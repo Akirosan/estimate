@@ -1,14 +1,15 @@
 from django.urls import path
 
 from .views import (AddCalc, AddMaterial, CalcListView, CatalogMaterialsView,
-                    CatalogWorksView, DeleteMaterial, EditMaterial,
-                    SearchMaterialListView, add_object_to_calc,
-                    delete_material_from_calc, edit_mat_in_calc, login,
-                    view_detail, edit_work_in_calc, SearchWorkListView, add_work, 
+                    DeleteMaterial, DeleteWork, EditMaterial, EditWork,
+                    SearchMaterialListView, add_work_to_calc,
+                    delete_material_from_calc, edit_mat_in_calc, list_work, login,
+                    view_detail, edit_work_in_calc, search_work_results, 
                     delete_work_from_calc,)
 
 urlpatterns = [
-
+   
+    
     path('add/', AddCalc.as_view(), name='add_calc'),  # Создать смету
     path('<slug:slug>/', view_detail, name='view_estimate_detail'),
     path('estimate_list/', CalcListView.as_view(), name='view_estimate_list'),
@@ -17,7 +18,7 @@ urlpatterns = [
     # Каталог материалов
     path('material', CatalogMaterialsView.as_view(), name='catalog_materials'),
     # Каталог видов работ
-    path('works', CatalogWorksView.as_view(), name='catalog_works'),
+    path('works', list_work, name='catalog_works'),
     # Добавление материала в каталог материалов
     path('material/add/', AddMaterial.as_view(), name='add_material'),
     
@@ -35,11 +36,7 @@ urlpatterns = [
         'material/search/',
         SearchMaterialListView.as_view(),
         name='search_material'),
-    path(  # Добавление материала в смету
-        '<int:calc_id>/add_to_calc/<str:search_type>/<int:pk>/<int:scroll>/',
-        add_object_to_calc,
-        name='add_object_to_calc'
-    ),
+    
     path(  # Удаление материала из сметы
         '<int:pk>/delete_from_calc/<int:calc_id>/',
         delete_material_from_calc,
@@ -50,29 +47,36 @@ urlpatterns = [
         edit_mat_in_calc,
         name='edit_mat_in_calc'
     ),
-
-
-    path(  # Изменяет цену и количество материала в смете
+    path(  # Изменяет цену и количество работы в смете
         'matedit/edit_work_in_calc/',
         edit_work_in_calc,
         name='edit_work_in_calc'
     ),
     path(  # Поиск вида работ
-        'work/search/',
-        SearchWorkListView.as_view(),
+        'search/work/',
+        search_work_results,
         name='search_work'),
+
     # Добавление материала в каталог материалов
-    path('work/add/', add_work, name='add_work'),
+    # path('work/add/', list_work, name='list_work'),
     path(  # Удаление материала из сметы
         '<int:calc_id>/work/delete/<int:pk>/',
         delete_work_from_calc,
         name='delete_work_from_calc'
     ),
-    # path(  # Удаление материала из сметы
-    #     '<slug:slug>/',
-    #     list_calc_after_add_object,
-    #     name='list_calc_after_add_object'
-    # ),
+    # Добавление работы в смету
+    path('<slug:slug>/addwork/<int:pk>/', add_work_to_calc, name='add-work-to-calc'),
+
+    path(  # Редакт мат. в каталоге материалов
+        'work/<int:pk>/edit/',
+        EditWork.as_view(),
+        name='edit_work'
+    ),
+    path(  # Удаление материала из каталож
+        'work/<int:pk>/delete/',
+        DeleteWork.as_view(),
+        name='delete_work'
+    ),
     
 
 ]

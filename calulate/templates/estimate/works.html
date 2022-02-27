@@ -6,6 +6,23 @@
   <div >
     <h5 class="card-header">Каталог видов работ</h5>
     <div class="card-body">
+      {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close">✖</a>
+                </li>
+            {% endfor %}
+              </ul>
+      {% endif %}
+      <div>
+        <form action="{% url "catalog_works" %}" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <input type="submit" value="Добавить">
+        </form>
+      </div>
 
 
    <table class="table table-sm">
@@ -25,6 +42,8 @@
           <td><a href="#">{{work.name}}</a></td>
           <td>{{work.measurement_unit}}</td>
           <td>{{work.price}}</td>
+          <td><a href="{% url "edit_work" work.pk %}">редактировать</a></td>
+          <td><a href="{% url "delete_work" work.pk %}">удалить</a></td>
         </tr>
       {% empty %}
       Пока ничего нет)

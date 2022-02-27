@@ -1,5 +1,8 @@
 {% extends 'index.html' %}
-{% block script%}
+{% load static %}
+{% block scripts %}
+  <script src="{% static 'js/main.js' %}" defer ></script>
+
   <script>
     $(window).on("scroll", function(){
       $('input[name="scroll"]').val($(window).scrollTop());
@@ -10,7 +13,7 @@
       }); 
     {% endif%}
   </script>
-{% endblock%}
+{% endblock %}
 
 
 {% block title %}{{ calculate.name }}{% endblock %}
@@ -68,7 +71,7 @@
   </thead>
   <tbody>
     <form id="edit_mat", action="{% url 'edit_mat_in_calc' %}" method="post">
-      {% csrf_token %}
+      {% comment %} {% csrf_token %} {% endcomment %}
       <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' >
     {% for material in materials %}
       <tr>
@@ -179,15 +182,15 @@
     <tr>
       <th></th>
       <th>
-        <form id="search_work", action="{% url 'search_work' %}" method="get">
-          
-          <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' >
-          <input name="search_query" type="text" placeholder="Поиск вида работы">
-          <input type="hidden" name="scroll" value="">
-          <input type="submit" value="Найти">
+
+        <form id="search-form" autocomplete="off">
+          {% csrf_token %}
+          <input id="search_field_work" class="search" type="text" placeholder="Поиск вида работы">
         </form>
-        1{{ scroll }}1
-        2{{ search_type }}2
+        <div id="results-box-work" class="results-card not-visible">test</div>
+
+
+        {% comment %} scroll = "{{ scroll }}" {% endcomment %}
       </th>
       <td></td>
       <td></td>
