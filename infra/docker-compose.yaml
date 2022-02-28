@@ -28,8 +28,8 @@ services:
       - 80:80
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/
-      - static_value:/static/
-      - media_value:/media/
+      - static_value:/var/html/static/ # В nginx/default.conf location /static/ {root /var/html/;} наверно
+      - media_value:/var/html/media/ # В nginx/default.conf location /media/ {root /var/html/;} наверно
       # - ./frontend/build:/usr/share/nginx/html/
       #- ./docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
       #- ./docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml

@@ -14,6 +14,13 @@ import os
 from dotenv import load_dotenv
 
 # from pathlib import Path
+import mimetypes
+
+mimetypes.add_type("application/javascript", ".js", True)
+
+DEBUG_TOOLBAR_CONFIG = {
+    "INTERCEPT_REDIRECTS": False,
+}
 
 load_dotenv()
 
@@ -42,11 +49,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'estimate',
     'user'
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'calculate.urls'
@@ -145,6 +155,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 #     os.path.join(BASE_DIR, "/static/"),
 # ]
 
+
+# STATIC_ROOT # collectstatic собирает сюда статические файлы
+# STATIC_URL #  URL-адрес, используемый для ссылки на статические файлы, расположенные в STATIC_ROOT 
+# STATICFILES_DIRS # Места где лежит папка static откуда статику можно забрать
+# STATICFILES_STORAGE # 
+# STATICFILES_FINDERS # 
+
+
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
@@ -154,3 +173,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.CustomUser'
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
