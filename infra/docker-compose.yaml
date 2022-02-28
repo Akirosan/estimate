@@ -13,8 +13,8 @@ services:
     image: akirosan/estimate
     restart: always
     volumes:
-      - static_value:/code/static/
-      - media_value:/code/media/
+      - static_value:/app/static/
+      - media_value:/app/media/
       # - nginx_conf:/code/nginx/
     depends_on:
       - db

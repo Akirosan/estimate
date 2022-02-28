@@ -10,7 +10,7 @@
 После сборки
 
 ```sudo docker-compose exec web python manage.py migrate --noinput```
-```sudo docker-compose exec web python manage.py collectstatic```
+```sudo docker-compose exec web python manage.py collectstatic```docker
 ```sudo docker-compose exec web python manage.py createsuperuser```
 
 
