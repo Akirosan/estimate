@@ -78,9 +78,9 @@
           <th scope="row">{{forloop.counter}}</th>
           <td><a href="#">{{material.material.name}}</a></td>
           <td>{{material.material.measurement_unit}}</td>
-          <td><input size="8", maxlength="10", name="mat_price_{{material.pk}}" type="text" value={{material.price}}></td>
-          <td><input size="8", maxlength="10", name="mat_quantity_{{material.pk}}" type="text" value={{material.quantity}}></td></td>
-          <td>{{material.amount}}</td>
+          <td><input id="matPrice_{{forloop.counter}}" class="matElement" size="8", maxlength="10", name="mat_price_{{material.pk}}" type="text" value={{material.price}}></td>
+          <td><input id="matQuant_{{forloop.counter}}" class="matElement" size="8", maxlength="10", name="mat_quant_{{material.pk}}" type="text" value={{material.quantity}}></td></td>
+          <td id="matAmount_{{forloop.counter}}"></td>
           <td><a href="#1" onClick="window.open('https://www.etm.ru/catalog?searchValue={{material.material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">ЭТМ</a></td>
           <td><a href="#1" onClick="window.open('https://www.minimaks.ru/catalog/?q={{material.material.name}}', 'newWin', 'Toolbar=0, Location=0, Directories=0, Status=0, Menubar=0, Scrollbars=0, Resizable=0, Copyhistory=1, Width=800, Height=600')">Минимакс</a></td>
           <td><a href="{% url "delete_material_from_calc" material.pk calculate.id %}">удалить</a></td>
@@ -154,9 +154,9 @@
           <th scope="row">{{forloop.counter}}</th>
           <td><a href="#">{{work.work.name}}</a></td>
           <td>{{work.work.measurement_unit}}</td>
-          <td><input size="8", maxlength="10", name="work_price_{{work.pk}}" type="text" value={{work.price}}></td>
-          <td><input size="8", maxlength="10", name="work_quantity_{{work.pk}}" type="text" value={{work.quantity}}></td>
-          <td>{{work.amount}}</td>
+          <td><input id="workPrice_{{forloop.counter}}" class="workElement" size="8" maxlength="10" name="work_price_{{work.pk}}" type="text" value={{work.price}}></td>
+          <td><input id="workQuant_{{forloop.counter}}" class="workElement" size="8" maxlength="10" name="work_quant_{{work.pk}}" type="text" value={{work.quantity}}></td>
+          <td id="workAmount_{{forloop.counter}}"></td>
           <td></td>
           <td></td>
           <td><a href="{% url "delete_work_from_calc" calculate.id work.pk %}">удалить</a></td>

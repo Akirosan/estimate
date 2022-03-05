@@ -60,3 +60,47 @@ searchInputWork.addEventListener('keyup', e=>{ // Обработчик собы�
 
     sendSearchData(e.target.value) // И передаем в функцию sendSearchData значение поля searchInput
 })
+
+
+document.addEventListener('keyup', e => { //Слушаем весь документ
+    if (e.target.matches('input[class="workElement"]')) { // Если событие произошло на input ...
+        let id = e.target.id.slice(10) // Отделяем id либо от цены либо от количества
+        summElements('work', id)
+        // console.log(type_element, id)
+    }
+    if (e.target.matches('input[class="matElement"]')) { // Если событие произошло на input ...
+        let id = e.target.id.slice(9) // Отделяем id либо от цены либо от количества
+        summElements('mat', id)
+    } 
+        
+  });
+
+
+function summElements(type_element, id) { // Выводит сумму элемента
+    console.log(type_element, id)
+    if(!document.querySelector(`[id="${type_element}Price_${id}"]`)) { return false }; // Проверяем наличие
+    let price = document.querySelector(`[id="${type_element}Price_${id}"]`).value;
+    
+    if(!document.querySelector(`[id="${type_element}Quant_${id}"]`).value) { console.log('no elements') } ;
+    let quaantity = document.querySelector(`[id="${type_element}Quant_${id}"]`).value;
+    let summ = +price * +quaantity
+    console.log(summ)
+    if (summ == undefined) {
+        console.log(summ)
+        return(False)
+    }
+    document.getElementById(`${type_element}Amount_${id}`).innerHTML = summ;
+    return true
+}
+
+
+function primaryCalculation(){
+    for(num=1; num<100; num++) {
+        if(!summElements('work', num)) { console.log('End of elements'); break }
+    }
+    for(num=1; num<100; num++) {
+        if(!summElements('mat', num)) { console.log('End of elements'); break }
+    }
+}
+
+primaryCalculation()

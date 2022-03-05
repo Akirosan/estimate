@@ -164,7 +164,7 @@ def edit_work_in_calc(request, *args, **kwargs):
             work_id = key.replace('work_price_', '')  # Отделяем ID вида работы
             work = works_from_calc.get(id=int(work_id))
             price = float(request.POST[key])  # Получаем цену
-            quantity = float(request.POST[f'work_quantity_{work_id}'])  # колличество
+            quantity = float(request.POST[f'work_quant_{work_id}'])  # колличество
             work.price = price  # Присваиваем объекту QuantityMaterial цену
             work.quantity = quantity  # Присваиваем объекту коллличество
             work.amount = price * quantity  # Определяем сумму
