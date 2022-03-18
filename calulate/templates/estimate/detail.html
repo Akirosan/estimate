@@ -148,11 +148,11 @@
     </tr>
   </thead>
   <tbody>
-    <form id="edit_work", action="{% url 'edit_work_in_calc' %}" method="post">
+    {% comment %} <form id="edit_work", action="{% url 'edit_work_in_calc' %}" method="post">
       {% csrf_token %}
-      <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' >
+      <input type="hidden" name="calc_id" type="text" value='{{calculate.pk}}' > {% endcomment %}
       
-    {% for work in works %}
+    {% comment %} {% for work in works %}
       <tr>
           <th scope="row">{{forloop.counter}}</th>
           <td><a href="#">{{work.work.name}}</a></td>
@@ -169,8 +169,16 @@
         <td colspan="9">Пока ничего нет, воспользуйтесь поиском чтобы добавить вид работы</td>
       </tr>
       
-      {% endfor %}
-      {% if works %}
+      {% endfor %} {% endcomment %}
+      
+    {% comment %} </form> {% endcomment %}
+    
+  
+  </tbody>
+  
+
+  <tbody id="list-work" class="results-list-work">test</tbody>
+  <tbody>{% if works %}
       <tr>
         <td></td>
         <td><strong>ИТОГО работ на сумму:</strong></td>
@@ -181,31 +189,33 @@
         <td colspan="3"><input type="submit" value="Пересчитать"></td>
       </tr>
       {% endif %}
-    </form>
-    <tr>
-      <th></th>
-      <th>
-
-        <form id="search-form" autocomplete="off">
-          {% csrf_token %}
-          <input id="search_field_work" class="search" type="text" placeholder="Поиск вида работы">
-        </form>
-        <div id="results-box-work" class="results-card not-visible">test</div>
-
-
-        {% comment %} scroll = "{{ scroll }}" {% endcomment %}
-      </th>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-  </tr>
+      <tr>
+        <th></th>
+        <th>
+  
+          <form id="search-form" autocomplete="off">
+            {% csrf_token %}
+            <input id="search_field_work" class="search" type="text" placeholder="Поиск вида работы">
+          </form>
+          <div id="results-box-work" class="results-card not-visible">test</div>
+  
+  
+          {% comment %} scroll = "{{ scroll }}" {% endcomment %}
+        </th>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
   </tbody>
 </table>
 
+
+
+{{calculate.id}}
 
     </div>
   </div>

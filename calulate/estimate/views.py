@@ -49,7 +49,7 @@ class DeleteWork(DeleteView):
 
 
 class EditWork(UpdateView):
-    """Редактирует материал в каталоге материалов"""
+    """Редактирует работу в каталоге видов работ"""
     queryset = Work.objects.all()
     models = Work
     fields = ['name', 'measurement_unit', 'price']
@@ -59,6 +59,7 @@ class EditWork(UpdateView):
         return reverse('catalog_works')
 
 def list_work(request):
+    """"Список видов работ в каталоге работ"""
     works = Work.objects.all()
     # import ipdb; ipdb.set_trace()
     if request.method == 'POST':
@@ -102,7 +103,7 @@ class CatalogMaterialsView(ListView):
 
 
 class CalcListView(ListView):
-    """Выводит список расчетов"""
+    """Выводит список смет"""
     queryset = Calculate.objects.all()
     context_object_name = 'calculate'
     template_name = 'estimate/list.html'
@@ -154,24 +155,26 @@ def edit_mat_in_calc(request, *args, **kwargs):
         reverse('view_estimate_detail', kwargs={'slug': calc.slug})
     )
 
-def edit_work_in_calc(request, *args, **kwargs):
-    calc = get_object_or_404(Calculate, id=request.POST['calc_id'])
-    works_from_calc = QuantityWork.objects.filter(
-        calculate=request.POST['calc_id']
-    )
-    for key in request.POST:
-        if 'work_price_' in key:
-            work_id = key.replace('work_price_', '')  # Отделяем ID вида работы
-            work = works_from_calc.get(id=int(work_id))
-            price = float(request.POST[key])  # Получаем цену
-            quantity = float(request.POST[f'work_quant_{work_id}'])  # колличество
-            work.price = price  # Присваиваем объекту QuantityMaterial цену
-            work.quantity = quantity  # Присваиваем объекту коллличество
-            work.amount = price * quantity  # Определяем сумму
-            work.save()  # Сохраняем объект
-    return HttpResponseRedirect(
-        reverse('view_estimate_detail', kwargs={'slug': calc.slug})
-    )
+
+# Сохраняет значения цены количества и суммы для видов работ --------- К удалению (ситается JavaScript om)
+# def edit_work_in_calc(request, *args, **kwargs):
+#     calc = get_object_or_404(Calculate, id=request.POST['calc_id'])
+#     works_from_calc = QuantityWork.objects.filter(
+#         calculate=request.POST['calc_id']
+#     )
+#     for key in request.POST:
+#         if 'work_price_' in key:
+#             work_id = key.replace('work_price_', '')  # Отделяем ID вида работы
+#             work = works_from_calc.get(id=int(work_id))
+#             price = float(request.POST[key])  # Получаем цену
+#             quantity = float(request.POST[f'work_quant_{work_id}'])  # колличество
+#             work.price = price  # Присваиваем объекту QuantityMaterial цену
+#             work.quantity = quantity  # Присваиваем объекту коллличество
+#             work.amount = price * quantity  # Определяем сумму
+#             work.save()  # Сохраняем объект
+#     return HttpResponseRedirect(
+#         reverse('view_estimate_detail', kwargs={'slug': calc.slug})
+#     )
 
 
 def total_price(materials, works):
@@ -253,23 +256,69 @@ class SearchMaterialListView(ListView):
 #     return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}))
 
 
-def add_work_to_calc(request, *args, **kwargs):
-    """Добавляет работу в смету"""
+
+# Будет заемнена ajax функцией вывода списка видов работ
+# def add_work_to_calc(request, *args, **kwargs):
+#     """Добавляет работу в смету"""
     
-    calc = get_object_or_404(Calculate, slug=kwargs['slug'])
-    work = get_object_or_404(Work, id=kwargs['pk'])
-    QuantityWork.objects.create(
-        work=work,
-        calculate=calc,
-        price=work.price,
-        quantity=0
-    )
-    if 'scroll' in request.GET:
-        scroll = f'?scroll={request.GET["scroll"]}'  # Заберем значение scroll из именованных и отправим GET запросом в обработчик view_estimate_detail
-        return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}) + scroll)
-    return redirect(request.META['HTTP_REFERER'])
+#     calc = get_object_or_404(Calculate, slug=kwargs['slug'])
+#     work = get_object_or_404(Work, id=kwargs['pk'])
+#     QuantityWork.objects.create(
+#         work=work,
+#         calculate=calc,
+#         price=work.price,
+#         quantity=0
+#     )
+#     if 'scroll' in request.GET:
+#         scroll = f'?scroll={request.GET["scroll"]}'  # Заберем значение scroll из именованных и отправим GET запросом в обработчик view_estimate_detail
+#         return HttpResponseRedirect(reverse('view_estimate_detail', kwargs={'slug': calc.slug}) + scroll)
+#     return redirect(request.META['HTTP_REFERER'])
 
 
+def add_work_to_calc(request, *args, **kwargs):
+    """Выводит ajax список видов работв смету"""
+    if is_ajax(request=request): # Если запрос is_ajax()
+        result = None
+        calc = get_object_or_404(Calculate, slug=kwargs['slug'])
+        work = get_object_or_404(Work, id=request.POST.get('work_pk'))
+        QuantityWork.objects.create(
+            work=work,
+            calculate=calc,
+            price=work.price,
+            quantity=0
+        )
+        calc_id = calc.id
+        return JsonResponse({'calc_id': calc_id})
+    return JsonResponse({})
+
+
+def viewListWork(request):
+    """Выводит ajax список видов работв смету"""
+    if is_ajax(request=request): # Если запрос is_ajax()
+        result = None
+        calc_id = request.POST.get('calc_id')
+        list_work = QuantityWork.objects.filter(calculate=calc_id)
+        # import pdb; pdb.set_trace()
+        if len(list_work) > 0 and len(calc_id) > 0: # Если есть результаты
+            data = []
+            for work in list_work:
+                item = {
+                    'pk': work.pk,
+                    'name': work.work.name,
+                    'measurement_unit': work.work.measurement_unit,
+                    'price': work.price,
+                    'quantity': work.quantity,
+                    # 'image': str(pos.image.url)
+                }
+                data.append(item)
+            result = data
+        else:
+            result = 'No works found'
+        return JsonResponse({'data': result})
+    return JsonResponse({})
+
+
+# Будет заменен ajax функцией даления элемента
 def delete_material_from_calc(request, *args, **kwargs):
     """Удаляет материал из сметы"""
     calc = get_object_or_404(Calculate, id=kwargs['calc_id'])
@@ -278,7 +327,9 @@ def delete_material_from_calc(request, *args, **kwargs):
         reverse('view_estimate_detail', kwargs={'slug': calc.slug})
     )
 
-def is_ajax(request): # Проверяет является ли request ajax 
+
+# Проверяет является ли request ajax 
+def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
 def search_work_results(request):
@@ -303,7 +354,6 @@ def search_work_results(request):
             result = data
         else:
             result = 'No works found'
-
         return JsonResponse({'data': result})
     return JsonResponse({})
 

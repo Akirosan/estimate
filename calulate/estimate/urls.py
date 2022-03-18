@@ -4,8 +4,8 @@ from .views import (AddCalc, AddMaterial, CalcListView, CatalogMaterialsView,
                     DeleteMaterial, DeleteWork, EditMaterial, EditWork,
                     SearchMaterialListView, add_work_to_calc,
                     delete_material_from_calc, edit_mat_in_calc, list_work, login,
-                    view_detail, edit_work_in_calc, search_work_results, 
-                    delete_work_from_calc,)
+                    view_detail, search_work_results, 
+                    delete_work_from_calc, viewListWork)
 
 urlpatterns = [
    
@@ -47,15 +47,21 @@ urlpatterns = [
         edit_mat_in_calc,
         name='edit_mat_in_calc'
     ),
-    path(  # Изменяет цену и количество работы в смете
-        'matedit/edit_work_in_calc/',
-        edit_work_in_calc,
-        name='edit_work_in_calc'
-    ),
-    path(  # Поиск вида работ
+    # path(  # Изменяет цену и количество работы в смете
+    #     'matedit/edit_work_in_calc/',
+    #     edit_work_in_calc,
+    #     name='edit_work_in_calc'
+    # ),
+    path(  # Поиск вида работ    AJAX
         'search/work/',
         search_work_results,
         name='search_work'),
+        
+
+    path(  # вывод списка видов работ    AJAX
+        'work/viewlist/',
+        viewListWork,
+        name='viewListWork'),
 
     # Добавление материала в каталог материалов
     # path('work/add/', list_work, name='list_work'),
@@ -65,7 +71,7 @@ urlpatterns = [
         name='delete_work_from_calc'
     ),
     # Добавление работы в смету
-    path('<slug:slug>/addwork/<int:pk>/', add_work_to_calc, name='add-work-to-calc'),
+    path('<slug:slug>/calc/addwork/', add_work_to_calc, name='addWorkToCalc'),
 
     path(  # Редакт мат. в каталоге материалов
         'work/<int:pk>/edit/',
